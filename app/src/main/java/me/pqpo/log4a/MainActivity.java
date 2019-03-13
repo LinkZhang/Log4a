@@ -34,8 +34,8 @@ public class MainActivity extends AppCompatActivity {
         etTimes = findViewById(R.id.et_times);
 
 
-        Log4a.d("MainActivity","Hello world\nLinkZhang");
-        Log4a.json("MainActivity","{\"msgBody\":\"1 bar xnxx ki ma night meh..Chh gaye aur dhekha xnxx ki maa ki chut meh tha lund ka b\",\"msgType\":1,\"userInfo\":{\"head\":\"http:\\/\\/download.dual-whatsapp.com\\/5c6acaf24011b00037cff117\\/20190311\\/head_1552311054897.jpg\",\"fromUid\":\"5c6acaf24011b00037cff117\",\"fromGender\":2,\"name\":\"Niki\"},\"timestamp\":1552361548273,\"msgInfo\":{},\"mid\":\"5c87284cd797fc003ab043df\"}");
+        L.d("MainActivity","Hello world\nLinkZhang");
+        L.json("MainActivity","{\"msgBody\":\"1 bar xnxx ki ma night meh..Chh gaye aur dhekha xnxx ki maa ki chut meh tha lund ka b\",\"msgType\":1,\"userInfo\":{\"head\":\"http:\\/\\/download.dual-whatsapp.com\\/5c6acaf24011b00037cff117\\/20190311\\/head_1552311054897.jpg\",\"fromUid\":\"5c6acaf24011b00037cff117\",\"fromGender\":2,\"name\":\"Niki\"},\"timestamp\":1552361548273,\"msgInfo\":{},\"mid\":\"5c87284cd797fc003ab043df\"}");
     }
 
 

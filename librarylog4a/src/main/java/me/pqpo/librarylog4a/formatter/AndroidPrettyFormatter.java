@@ -8,7 +8,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import me.pqpo.librarylog4a.Level;
-import me.pqpo.librarylog4a.Log4a;
 
 /**
  * @author linkzhang
@@ -49,7 +48,14 @@ public class AndroidPrettyFormatter implements Formatter{
     private static final String TOP_BORDER = TOP_LEFT_CORNER + DOUBLE_DIVIDER + DOUBLE_DIVIDER;
     private static final String BOTTOM_BORDER = BOTTOM_LEFT_CORNER + DOUBLE_DIVIDER + DOUBLE_DIVIDER;
     private static final String MIDDLE_BORDER = MIDDLE_CORNER + SINGLE_DIVIDER + SINGLE_DIVIDER;
+    private String mLogClassName;
 
+    public AndroidPrettyFormatter(String name) {
+        mLogClassName=name;
+    }
+
+    public AndroidPrettyFormatter() {
+    }
 
     public static void log(String tag, int priority, String message) {
 
@@ -66,13 +72,13 @@ public class AndroidPrettyFormatter implements Formatter{
      *
      * @return 堆栈
      */
-    private static StackTraceElement getTargetStackTraceElement() {
+    private StackTraceElement getTargetStackTraceElement() {
         // find the target invoked method
         StackTraceElement targetStackTrace = null;
         boolean shouldTrace = false;
         StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
         for (StackTraceElement stackTraceElement : stackTrace) {
-            boolean isLogMethod = stackTraceElement.getClassName().equals(Log4a.class.getName());
+            boolean isLogMethod = stackTraceElement.getClassName().equals(mLogClassName);
             if (shouldTrace && !isLogMethod) {
                 targetStackTrace = stackTraceElement;
                 break;
@@ -83,7 +89,7 @@ public class AndroidPrettyFormatter implements Formatter{
     }
 
     @SuppressWarnings("StringBufferReplaceableByString")
-    private static void logHeaderContent(int logType, String tag) {
+    private void logHeaderContent(int logType, String tag) {
         String level = "";
 
         StackTraceElement element = getTargetStackTraceElement();
@@ -104,11 +110,11 @@ public class AndroidPrettyFormatter implements Formatter{
 
     }
 
-    private static void logBottomBorder(int logType, String tag) {
+    private void logBottomBorder(int logType, String tag) {
         logChunk(logType, tag, BOTTOM_BORDER);
     }
 
-    private static void logDivider(int logType, String tag) {
+    private void logDivider(int logType, String tag) {
         logChunk(logType, tag, MIDDLE_BORDER);
     }
 
