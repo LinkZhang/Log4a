@@ -1,4 +1,4 @@
-package me.pqpo.librarylog4a.appender;
+package me.pqpo.librarylog4a.printer;
 
 
 import android.content.Context;
@@ -16,18 +16,20 @@ import me.pqpo.librarylog4a.interceptor.Interceptor;
 /**
  * Created by pqpo on 2017/11/16.
  */
-public class FileAppender extends AbsAppender {
+public class FilePrinter extends AbsPrinter {
 
+    private final boolean mEnable;
     private LogBuffer logBuffer;
 
     private Formatter formatter;
 
-    protected FileAppender(Builder builder) {
+    protected FilePrinter(Builder builder) {
         logBuffer = new LogBuffer(builder.bufferFilePath, builder.bufferSize, builder.logFilePath, builder.compress);
         setMaxSingleLength(builder.bufferSize);
         setLevel(builder.level);
         addInterceptor(builder.interceptors);
         setFormatter(builder.formatter);
+        mEnable = builder.enable;
     }
 
     public String getBufferPath() {
@@ -53,8 +55,10 @@ public class FileAppender extends AbsAppender {
     }
 
     @Override
-    protected void doAppend(int logLevel, String tag, String msg) {
-        logBuffer.write(formatter.format(logLevel, tag, msg));
+    protected void log(int logLevel, String tag, String msg) {
+        if (mEnable) {
+            logBuffer.write(formatter.format(logLevel, tag, msg));
+        }
     }
 
     @Override
@@ -80,6 +84,7 @@ public class FileAppender extends AbsAppender {
         private List<Interceptor> interceptors;
         private Formatter formatter;
         private boolean compress;
+        private boolean enable;
 
         public Builder(Context context) {
             this.context = context;
@@ -123,7 +128,7 @@ public class FileAppender extends AbsAppender {
             return this;
         }
 
-        public FileAppender create() {
+        public FilePrinter create() {
             if (logFilePath == null) {
                 throw new IllegalArgumentException("logFilePath cannot be null");
             }
@@ -138,7 +143,7 @@ public class FileAppender extends AbsAppender {
                     }
                 };
             }
-            return new FileAppender(this);
+            return new FilePrinter(this);
         }
 
         private String getDefaultBufferPath(Context context) {
@@ -155,6 +160,10 @@ public class FileAppender extends AbsAppender {
             return new File(bufferFile, ".log4aCache").getAbsolutePath();
         }
 
+        public Builder setEnable(boolean enable) {
+            this.enable = enable;
+            return this;
+        }
     }
 
 }

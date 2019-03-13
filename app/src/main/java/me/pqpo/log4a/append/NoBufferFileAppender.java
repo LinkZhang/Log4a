@@ -5,13 +5,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import me.pqpo.librarylog4a.Level;
-import me.pqpo.librarylog4a.appender.AbsAppender;
+import me.pqpo.librarylog4a.printer.AbsPrinter;
 
 /**
  * Created by pqpo on 2017/11/28.
  */
-public class NoBufferFileAppender extends AbsAppender {
+public class NoBufferFileAppender extends AbsPrinter {
 
     private File logFile;
     private OutputStream outputStream;
@@ -35,7 +34,7 @@ public class NoBufferFileAppender extends AbsAppender {
     }
 
     @Override
-    protected void doAppend(int logLevel, String tag, String msg) {
+    protected void log(int logLevel, String tag, String msg) {
         if (outputStream == null) {
             return;
         }

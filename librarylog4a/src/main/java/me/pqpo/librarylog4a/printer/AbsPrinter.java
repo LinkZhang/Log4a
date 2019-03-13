@@ -1,4 +1,4 @@
-package me.pqpo.librarylog4a.appender;
+package me.pqpo.librarylog4a.printer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +10,7 @@ import me.pqpo.librarylog4a.interceptor.LevelInterceptor;
 /**
  * Created by pqpo on 2017/11/21.
  */
-public abstract class AbsAppender implements Appender {
+public abstract class AbsPrinter implements Printer {
 
     public static final int MAX_LENGTH_OF_SINGLE_MESSAGE = 4063;
 
@@ -20,7 +20,7 @@ public abstract class AbsAppender implements Appender {
 
     private LevelInterceptor levelInterceptor = new LevelInterceptor();
 
-    public AbsAppender() {
+    public AbsPrinter() {
         addInterceptor(levelInterceptor);
     }
 
@@ -45,7 +45,7 @@ public abstract class AbsAppender implements Appender {
     }
 
     @Override
-    public void append(int logLevel, String tag, String msg) {
+    public void print(int logLevel, String tag, String msg) {
         LogData logData = LogData.obtain(logLevel, tag, msg);
         boolean intercepted = false;
         for (Interceptor interceptor : interceptors) {
@@ -61,20 +61,20 @@ public abstract class AbsAppender implements Appender {
 
     private void appendInner(int logLevel, String tag, String msg) {
         if (msg.length() <= maxSingleLength) {
-            doAppend(logLevel, tag, msg);
+            log(logLevel, tag, msg);
             return;
         }
         int msgLength = msg.length();
         int start = 0;
         int end = start + maxSingleLength;
         while (start < msgLength) {
-            doAppend(logLevel, tag, msg.substring(start, end));
+            log(logLevel, tag, msg.substring(start, end));
             start = end;
             end = Math.min(start + maxSingleLength, msgLength);
         }
     }
 
-    protected abstract void doAppend(int logLevel, String tag, String msg);
+    protected abstract void log(int logLevel, String tag, String msg);
 
     @Override
     public void flush() {

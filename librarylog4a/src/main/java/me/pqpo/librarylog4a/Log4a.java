@@ -4,10 +4,14 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.UnknownHostException;
 
-import me.pqpo.librarylog4a.logger.AndroidLogger;
-import me.pqpo.librarylog4a.logger.Logger;
+import me.pqpo.librarylog4a.printer.Printer;
 
-import static me.pqpo.librarylog4a.Level.*;
+import static me.pqpo.librarylog4a.Level.DEBUG;
+import static me.pqpo.librarylog4a.Level.ERROR;
+import static me.pqpo.librarylog4a.Level.INFO;
+import static me.pqpo.librarylog4a.Level.JSON;
+import static me.pqpo.librarylog4a.Level.VERBOSE;
+import static me.pqpo.librarylog4a.Level.WARN;
 
 
 /**
@@ -15,14 +19,10 @@ import static me.pqpo.librarylog4a.Level.*;
  */
 public class Log4a {
 
-    private static Logger sLoggerDelegate = new AndroidLogger();
+    private static LogConfig sConfig;
 
-    public static void setLogger(Logger logger) {
-        sLoggerDelegate = logger;
-    }
-
-    public static Logger getLogger() {
-        return sLoggerDelegate;
+    public static void init(LogConfig config){
+        sConfig = config;
     }
 
     public static void v(String tag, String msg) {
@@ -31,6 +31,10 @@ public class Log4a {
 
     public static void d(String tag, String msg) {
         println(DEBUG, tag, msg);
+    }
+
+    public static void json(String tag, String msg) {
+        println(JSON, tag, msg);
     }
 
     public static void i(String tag, String msg) {
@@ -62,22 +66,23 @@ public class Log4a {
     }
 
     public static void println(int priority, String tag, String msg) {
-        if (sLoggerDelegate != null) {
-            sLoggerDelegate.println(priority, tag, msg);
+        for (Printer printer : sConfig.mPrinters) {
+            printer.print(priority, tag, msg);
         }
     }
 
+
     public static void flush() {
-        if (sLoggerDelegate != null) {
-            sLoggerDelegate.flush();
+        for (Printer printer : sConfig.mPrinters) {
+            printer.flush();
         }
     }
 
     public static void release() {
-        if (sLoggerDelegate != null) {
-            sLoggerDelegate.release();
+        for (Printer printer : sConfig.mPrinters) {
+            printer.release();
         }
-        sLoggerDelegate = null;
+        sConfig.mPrinters.clear();
     }
 
     public static String getStackTraceString(Throwable tr) {

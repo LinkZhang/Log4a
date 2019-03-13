@@ -16,6 +16,8 @@ public class Level {
 
     public static final int ERROR = 6;
 
+    public static final int JSON = 7;
+
     public static String getLevelName(int logLevel) {
         String levelName;
         switch (logLevel) {
@@ -33,6 +35,9 @@ public class Level {
                 break;
             case ERROR:
                 levelName = "ERROR";
+                break;
+            case JSON:
+                levelName = "DEBUG";
                 break;
             default:
                 if (logLevel < VERBOSE) {
@@ -62,6 +67,9 @@ public class Level {
                 break;
             case ERROR:
                 levelName = "E";
+                break;
+            case JSON:
+                levelName = "D";
                 break;
             default:
                 if (logLevel < VERBOSE) {

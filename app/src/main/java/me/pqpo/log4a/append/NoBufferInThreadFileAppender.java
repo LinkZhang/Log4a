@@ -9,12 +9,12 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import me.pqpo.librarylog4a.appender.AbsAppender;
+import me.pqpo.librarylog4a.printer.AbsPrinter;
 
 /**
  * Created by pqpo on 2017/11/28.
  */
-public class NoBufferInThreadFileAppender extends AbsAppender {
+public class NoBufferInThreadFileAppender extends AbsPrinter {
 
     private String TAG = "NoBufferInThreadFileAppender";
 
@@ -51,7 +51,7 @@ public class NoBufferInThreadFileAppender extends AbsAppender {
     }
 
     @Override
-    protected void doAppend(int logLevel, String tag, String msg) {
+    protected void log(int logLevel, String tag, String msg) {
         try {
             queue.put(logLevel + tag + msg);
         } catch (InterruptedException e) {
