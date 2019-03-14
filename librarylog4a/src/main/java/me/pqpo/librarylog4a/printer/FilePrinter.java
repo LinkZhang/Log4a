@@ -3,10 +3,14 @@ package me.pqpo.librarylog4a.printer;
 
 import android.content.Context;
 import android.os.Environment;
+import android.text.TextUtils;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import me.pqpo.librarylog4a.Level;
 import me.pqpo.librarylog4a.LogBuffer;
@@ -18,18 +22,27 @@ import me.pqpo.librarylog4a.interceptor.Interceptor;
  */
 public class FilePrinter extends AbsPrinter {
 
+    private static SimpleDateFormat sDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
     private final boolean mEnable;
+    private final String mLogFileDir;
+    private final String mLogFilePath;
     private LogBuffer logBuffer;
-
+    private static final long DAYS = 24 * 60 * 60 * 1000; //天
+    private static final long M = 1024 * 1024; //M
+    private static final long DEFAULT_DAY = 7 * DAYS; //默认删除天数
+    private static final long DEFAULT_FILE_SIZE = 10 * M;
     private Formatter formatter;
 
     protected FilePrinter(Builder builder) {
-        logBuffer = new LogBuffer(builder.bufferFilePath, builder.bufferSize, builder.logFilePath, builder.compress);
+        mLogFileDir = builder.logFileDir;
+        mLogFilePath = new File(mLogFileDir, getCurrentTime() + ".txt").getAbsolutePath();
+        logBuffer = new LogBuffer(builder.bufferFilePath, builder.bufferSize, mLogFilePath, builder.compress);
         setMaxSingleLength(builder.bufferSize);
         setLevel(builder.level);
         addInterceptor(builder.interceptors);
         setFormatter(builder.formatter);
         mEnable = builder.enable;
+        deleteExpiredFile(System.currentTimeMillis()-DEFAULT_DAY);
     }
 
     public String getBufferPath() {
@@ -53,6 +66,35 @@ public class FilePrinter extends AbsPrinter {
             this.formatter = formatter;
         }
     }
+
+    private void deleteExpiredFile(long deleteTime) {
+        File dir = new File(mLogFileDir);
+        if (dir.isDirectory()) {
+            String[] files = dir.list();
+            if (files != null) {
+                for (String item : files) {
+                    if (TextUtils.isEmpty(item) || new File(item).isDirectory() || !item.endsWith
+                            (".txt")) {
+                        continue;
+                    }
+                    String[] longStrArray = item.split("\\.");
+                    if (longStrArray.length > 0) {  //小于时间就删除
+                        try {
+                            long longItem = Long.valueOf(longStrArray[0]);
+                            if (longItem <= deleteTime && longStrArray.length == 2) {
+                                new File(mLogFileDir, item).delete(); //删除文件
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+
+                }
+            }
+        }
+    }
+
 
     @Override
     protected void log(int logLevel, String tag, String msg) {
@@ -78,7 +120,7 @@ public class FilePrinter extends AbsPrinter {
         private Context context;
 
         private String bufferFilePath;
-        private String logFilePath;
+        private String logFileDir;
         private int bufferSize = 4096;
         private int level = Level.VERBOSE;
         private List<Interceptor> interceptors;
@@ -100,8 +142,8 @@ public class FilePrinter extends AbsPrinter {
             return this;
         }
 
-        public Builder setLogFilePath(String logFilePath) {
-            this.logFilePath = logFilePath;
+        public Builder setLogFileDir(String logFilePath) {
+            this.logFileDir = logFilePath;
             return this;
         }
 
@@ -129,7 +171,7 @@ public class FilePrinter extends AbsPrinter {
         }
 
         public FilePrinter create() {
-            if (logFilePath == null) {
+            if (logFileDir == null) {
                 throw new IllegalArgumentException("logFilePath cannot be null");
             }
             if (bufferFilePath == null) {
@@ -139,7 +181,7 @@ public class FilePrinter extends AbsPrinter {
                 formatter = new Formatter() {
                     @Override
                     public String format(int logLevel, String tag, String msg) {
-                        return String.format("%s/%s: %s\n",  Level.getShortLevelName(logLevel), tag, msg);
+                        return String.format("%s/%s: %s\n", Level.getShortLevelName(logLevel), tag, msg);
                     }
                 };
             }
@@ -164,6 +206,23 @@ public class FilePrinter extends AbsPrinter {
             this.enable = enable;
             return this;
         }
+    }
+
+
+    public static long getCurrentTime() {
+        long currentTime = System.currentTimeMillis();
+        long tempTime = 0;
+        try {
+            String dataStr = sDateFormat.format(new Date(currentTime));
+            tempTime = sDateFormat.parse(dataStr).getTime();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return tempTime;
+    }
+
+    public static String getDateStr(long time) {
+        return sDateFormat.format(new Date(time));
     }
 
 }
