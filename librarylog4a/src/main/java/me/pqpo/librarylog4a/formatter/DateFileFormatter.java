@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.TimeZone;
 
 import me.pqpo.librarylog4a.Level;
 
@@ -19,11 +20,12 @@ public class DateFileFormatter implements Formatter {
     private int mTimeLength = 0;
 
     public DateFileFormatter() {
-        this("yyyy:MM:dd HH:mm:ss");
+        this("yyyy-MM-dd HH:mm:ss");
     }
 
     public DateFileFormatter(String pattern) {
-        simpleDateFormat = new SimpleDateFormat(pattern, Locale.getDefault());
+        simpleDateFormat = new SimpleDateFormat(pattern, Locale.ENGLISH);
+        simpleDateFormat.setTimeZone(TimeZone.getTimeZone("GMT+8:00"));
         mStringBuffer = new StringBuffer();
         //重置秒数
         Calendar instance = Calendar.getInstance();
@@ -53,9 +55,9 @@ public class DateFileFormatter implements Formatter {
             mStringBuffer.delete(mTimeLength, mStringBuffer.length());
         }
         return mStringBuffer.append(Level.getShortLevelName(logLevel))
-                .append(" ")
+                .append(" [")
                 .append(tag)
-                .append(" ")
+                .append("] ")
                 .append(msg)
                 .append('\n')
                 .toString();

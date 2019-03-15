@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
 
 import me.pqpo.librarylog4a.Level;
 import me.pqpo.librarylog4a.LogBuffer;
@@ -34,6 +35,7 @@ public class FilePrinter extends AbsPrinter {
     private Formatter formatter;
 
     protected FilePrinter(Builder builder) {
+        sDateFormat.setTimeZone(TimeZone.getTimeZone("GMT+8:00"));
         mLogFileDir = builder.logFileDir;
         mLogFilePath = new File(mLogFileDir, getCurrentTime() + ".txt").getAbsolutePath();
         logBuffer = new LogBuffer(builder.bufferFilePath, builder.bufferSize, mLogFilePath, builder.compress);
