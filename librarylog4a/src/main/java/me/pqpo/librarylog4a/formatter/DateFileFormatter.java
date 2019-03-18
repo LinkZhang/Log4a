@@ -25,7 +25,7 @@ public class DateFileFormatter implements Formatter {
 
     public DateFileFormatter(String pattern) {
         simpleDateFormat = new SimpleDateFormat(pattern, Locale.ENGLISH);
-        simpleDateFormat.setTimeZone(TimeZone.getTimeZone("GMT+8:00"));
+        simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
         mStringBuffer = new StringBuffer();
         //重置秒数
         Calendar instance = Calendar.getInstance();
@@ -47,7 +47,9 @@ public class DateFileFormatter implements Formatter {
         if (mStringBuffer.length() > 0) {
             mStringBuffer.delete(0, mStringBuffer.length());
         }
-        mTimeLength = mStringBuffer.append(lastDataFormated).append(' ').length();
+        mTimeLength = mStringBuffer.append(lastDataFormated).append(" [").append(mDate.getTime())
+                .append("] ")
+                .length();
     }
 
     private String formatString(int logLevel, String tag, String msg) {

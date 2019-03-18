@@ -2,6 +2,8 @@ package me.pqpo.librarylog4a;
 
 import android.util.Log;
 
+import java.io.File;
+
 /**
  * Created by pqpo on 2017/11/16.
  */
@@ -44,6 +46,12 @@ public class LogBuffer {
 
     public String getLogPath() {
         return logPath;
+    }
+
+    public long getLogPathDirDate(){
+        File file = new File(logPath);
+        String name =  file.getName();
+        return Long.parseLong(name.split("\\.")[0]);
     }
 
     public String getBufferPath() {

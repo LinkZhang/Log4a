@@ -26,7 +26,7 @@ public class FilePrinter extends AbsPrinter {
     private static SimpleDateFormat sDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
     private final boolean mEnable;
     private final String mLogFileDir;
-    private final String mLogFilePath;
+    private String mLogFilePath;
     private LogBuffer logBuffer;
     private static final long DAYS = 24 * 60 * 60 * 1000; //天
     private static final long M = 1024 * 1024; //M
@@ -35,7 +35,7 @@ public class FilePrinter extends AbsPrinter {
     private Formatter formatter;
 
     protected FilePrinter(Builder builder) {
-        sDateFormat.setTimeZone(TimeZone.getTimeZone("GMT+8:00"));
+        sDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
         mLogFileDir = builder.logFileDir;
         mLogFilePath = new File(mLogFileDir, getCurrentTime() + ".txt").getAbsolutePath();
         logBuffer = new LogBuffer(builder.bufferFilePath, builder.bufferSize, mLogFilePath, builder.compress);
@@ -101,6 +101,11 @@ public class FilePrinter extends AbsPrinter {
     @Override
     protected void log(int logLevel, String tag, String msg) {
         if (mEnable) {
+            if (logBuffer.getLogPathDirDate() != getCurrentTime()) {
+                logBuffer.flushAsync();
+                mLogFilePath = new File(mLogFileDir, getCurrentTime() + ".txt").getAbsolutePath();
+                logBuffer.changeLogPath(mLogFilePath);
+            }
             logBuffer.write(formatter.format(logLevel, tag, msg));
         }
     }
